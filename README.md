@@ -1,4 +1,0 @@
-sthread
-=======
-
-smallthread threads library
