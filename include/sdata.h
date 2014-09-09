@@ -8,18 +8,20 @@
  /*
   * Exemplo de estrutura de dados da Thread Control Block
   */
- typedef struct tcb {
-	int estado;
-	// ....
+typedef struct tcb 
+{
+	int state;
+	int tid;
 	struct tcb *next;
- } TCB;
+}TCB;
  
 /*
  * Exemplo de estrutura de dados "mutex"
  * Os grupos devem alterar essa estrutura de acordo com sua necessidade
  */ 
-typedef struct mutex {
+typedef struct mutex 
+{
 	int flag;
-    TCB *first;
+    	TCB *first;
 	TCB *last;
-} mmutex_t;
+}smutex_t;
