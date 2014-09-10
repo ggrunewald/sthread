@@ -1,35 +1,36 @@
-#ifndef __sdata__
-#define __sdata__
-
 /*
- * Estrutura de dados da Thread
+ * sdata.h: arquivo de inclusão onde os grupos devem colocar as definições
+ *          de suas estruturas de dados
+ *
+ * VERSÃO 1 - 20/08/2014
  */
-typedef struct tcb 
+ 
+ /*
+  * Exemplo de estrutura de dados da Thread Control Block
+  */
+ typedef struct tcb 
 {
-	/*
-	 * Enumerador dos estados possÃ­veis
- 	*/
-	enum State
+	enum
 	{
-		apt,
-		blocked,
+		apt = 1, 
+		blocked, 
 		executing,
-		criated,
+		created,
 		ended
 	}state;
 	
-	int tid;		//thread identification
-	struct tcb *next;	//next node of queue
-}TCB;
+	int tid;
+	
+	struct tcb *next;
+ } TCB;
  
 /*
- * Estrutura de dados mutex
+ * Exemplo de estrutura de dados "mutex"
+ * Os grupos devem alterar essa estrutura de acordo com sua necessidade
  */ 
 typedef struct mutex 
 {
-	int flag;	//is acquired
-    	TCB *first;	//first blocked queue element
-	TCB *last;	//last blocked queue element
-}smutex_t;
-
-#endif
+	int flag;
+    	TCB *first;
+	TCB *last;
+} smutex_t;
