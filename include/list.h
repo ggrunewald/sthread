@@ -3,16 +3,17 @@
 
 #include "sthread.h"
 
-
 typedef struct threadList		//struct for list manipulation of threads
 {
 	TCB * thread;			//data
 	struct threadList * next;	//pointer to the next element of list
 }threadList;
 
-//manipulation of blocked threads by dispatcher
+//struct constructor
 threadList * listInit();
 
+//manipulation of blocked threads by dispatcher and priority apt list
+struct threadList* includeThread(struct threadList* list, struct TCB* tcb);
 
 //manipulation of blocked threads by mutex
 int insert_in_blockqueue(smutex_t *mtx, TCB *thread);

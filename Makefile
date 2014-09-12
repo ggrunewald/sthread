@@ -1,14 +1,15 @@
 CC=gcc
+AR=ar
 LIB_DIR=./lib/
 INC_DIR=./include/
 BIN_DIR=./bin/
 SRC_DIR=./src/
 CFLAG=-Wall
 
-all: libsthread.a
+all: clean libsthread.a
 
 libsthread.a: sthread.o list.o
-	ar crs $(LIB_DIR)libsthread.a $(BIN_DIR)sthread.o $(BIN_DIR)list.o
+	$(AR) crs $(LIB_DIR)libsthread.a $(BIN_DIR)sthread.o $(BIN_DIR)list.o
 
 sthread.o:
 	$(CC) -c $(SRC_DIR)sthread.c $(CFLAGS)

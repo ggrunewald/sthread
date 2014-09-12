@@ -10,6 +10,8 @@
 
 #include "../include/sthread.h"
 
+#include <stdio.h>
+
 void func0(void *arg) 
 {
 
@@ -38,5 +40,7 @@ int main(int argc, char *argv[])
     	swait(id1);
 
     	printf("Eu sou a main voltando para terminar o programa\n");
+
+	return 0;
 }
 

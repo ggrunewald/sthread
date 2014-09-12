@@ -3,6 +3,7 @@
 
 #include "../include/list.h"
 
+//list constructor
 threadList * listInit()
 {
 	threadList * newList = (threadList *)malloc(sizeof(threadList));
@@ -12,6 +13,14 @@ threadList * listInit()
 	return newList;
 }
 
+//manipulation of blocked threads by dispatcher and priority apt list
+struct threadList* includeThread(struct threadList* list, struct TCB* tcb)
+{
+
+}
+
+
+//manipulation of blocked threads by mutex
 int insert_in_blockqueue(smutex_t *mtx, TCB * thread)
 {
 	if(mtx->first == 0)
