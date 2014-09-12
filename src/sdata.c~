@@ -1,0 +1,31 @@
+#include "../include/sdata.h"
+
+#include <stdlib.h>
+
+TCB* tcb_const(int id)
+{
+	TCB* thread = malloc(sizeof(TCB));
+	thread->tid = id;
+	thread->next = 0;
+	ucontext_t 
+	return thread;
+}
+
+void tcb_dest(TCB* thread) 
+{
+	free(thread);
+}
+
+smutex_t* mutex_const()
+{
+	smutex_t* mtx = malloc(sizeof(smutex_t));
+	mtx->first = 0;
+	mtx->last = 0;
+	mtx->flag = 0;
+	return mtx;
+}
+
+void mutex_dest(smutex_t* mtx) 
+{
+	free(mtx);
+}

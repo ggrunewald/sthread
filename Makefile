@@ -1,30 +1,24 @@
-#
-# Makefile ESQUELETO
-#
-# OBRIGATÓRIO ter uma regra "all" para geração da biblioteca e de uma
-# regra "clean" para remover todos os objetos gerados.
-#
-# NECESSARIO adaptar este esqueleto de makefile para suas necessidades.
-# 
-
 CC=gcc
-LIB_DIR=./lib
-INC_DIR=./include
-BIN_DIR=./bin
-SRC_DIR=./src
+LIB_DIR=./lib/
+INC_DIR=./include/
+BIN_DIR=./bin/
+SRC_DIR=./src/
+CFLAG=-Wall
 
-all: regra1 regra2 regran
+all: libsthread.a
 
-regra1: #dependências para a regra1
-	$(CC) -o $(BIN_DIR)regra1 $(SRC_DIR)regra1.c -Wall
+libsthread.a: sthread.o list.o
+	ar crs $(LIB_DIR)libsthread.a $(BIN_DIR)sthread.o $(BIN_DIR)list.o
 
-regra2: #dependências para a regra2
-	$(CC) -o $(BIN_DIR)regra2 $(SRC_DIR)regra2.c -Wall
+sthread.o:
+	$(CC) -c $(SRC_DIR)sthread.c $(CFLAGS)
+	mv sthread.o $(BIN_DIR)
 
-regran: #dependências para a regran
-	$(CC) -o $(BIN_DIR)regran $(SRC_DIR)regran.c -Wall
+list.o:
+	$(CC) -c $(SRC_DIR)list.c $(CFLAGS)
+	mv list.o $(BIN_DIR)
 
 clean:
-	rm -rf $(LIB_DIR)/*.a $(BIN_DIR)/*.o $(SRC_BIN)/*~ $(INC_BIN)/*~ *~
+	rm -rf $(LIB_DIR)*.a $(BIN_DIR)*.o $(SRC_BIN)*~ $(INC_BIN)*~ *~
 
 

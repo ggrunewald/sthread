@@ -47,7 +47,7 @@ void dispatcherInit(void);		//initializes the lists and other necessary structur
 TCB * executingThread;			//thread at the ucp
 ucontext_t returnContext;		//return thread must return after its end
 
-struct threadList * aptList[3];
+struct threadList aptList[3];
 struct threadList * blockedList;	//blocked threads (cant be executed)
 
 int threadCounter;			//thread counter (usefull for identification)

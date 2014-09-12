@@ -79,8 +79,6 @@ void dispatcherInit(void)
 		aptList[i] = listInit();
 	}
 
-	blockedList = listInit();
-
 	firstCall = FALSE;
 }
 
