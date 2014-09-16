@@ -63,10 +63,13 @@ int screate (int prio, void (*start)(void*), void *arg)
 	//modify de newThread context to execute the start function
 	makecontext(&newThread->context, (void*)(*start), 1, arg);
 
-	//include the newThread in the apt list of its priority
+	//insert the newThread in the apt list of its priority
 	aptList[newThread->priority] = insertThread(aptList[newThread->priority], newThread);
 
-	return SUCCESS;
+	//insert the newThread in the list that holds all managed threads
+	allThreadsList = insertThread(allThreadsList, newThread);
+
+	return newThread->tid;
 }
 
 int syield()
@@ -77,7 +80,41 @@ int syield()
 
 int swait(int tid)
 {
+	tcb * thread = threadSearch(allThreadsList, tid);
+
+	if(thread == NULL)		//veririfies if user tried to wait for a non existant thread
+		return ERROR;
+
+	executingThread->status = BLOCKED;
+
+	blockedList = insertThread(blockedList, executingThread);
+
+	int ret = 0;
+
+	getcontext(&returnContext); 	//terminated threads will return to this point.
+
+	if(executingThread->tid != 0)
+	{
+		if(executingThread->tid == tid)
+		{
+			ret = 1;
+
+			blockedList = removeThread(blockedList, thread);
+
+			aptList[thread->priority] = insertThread(aptList[thread->priority], thread);
+
+			dispatcher();
+		}
+	}
 	
+	while(TRUE)
+	{			
+		//quits the eternal loop when the waited thread have terminated
+		if(executingThread->tid == thread->tid && ret == 1) 
+			break;				
+		
+		dispatcher();							
+	}
 
 	return 0;
 }
@@ -113,23 +150,69 @@ int dispatcherInit()
 	//initializing the blocked threads list
 	blockedList = listInit();
 
+	//initializing the list that holds all the threads that have been created
+	allThreadsList = listInit();
+
 	//sets the firstCall to false, because this function should be executed once
 	firstCall = FALSE;
 
 	//creation of the first thread (main_thread)
 	executingThread = tcb_const(2);
 
+	//insert the newThread in the list that holds all managed threads
+	allThreadsList = insertThread(allThreadsList, executingThread);
+
 	if(executingThread->tid != 0)
 		return ERROR;
 
-	if(aptList == NULL	||
-	   aptList[0] == NULL	|| 
-	   aptList[1] == NULL	|| 
-           aptList[2] == NULL	||
-	   blockedList == NULL	||
+	//verifies if something isn't intialized
+	if(aptList == NULL	  ||
+	   aptList[0] == NULL	  || 
+	   aptList[1] == NULL	  || 
+           aptList[2] == NULL	  ||
+	   blockedList == NULL	  ||
+	   allThreadsList == NULL ||
 	   executingThread == NULL)
 		return ERROR;
 
 	return SUCCESS;
+}
+
+void dispatcher()
+{
+	tcb * auxThread = executingThread;
+	
+	if(aptList[0]->thread != NULL)
+	{
+		executingThread = aptList[0]->thread;
+
+		executingThread->status = EXECUTING;
+
+		aptList[0] = removeThread(aptList[0], aptList[0]->thread);
+
+		swapcontext(&auxThread->context, &executingThread->context);
+	}
+
+	else if(aptList[1]->thread != NULL)
+	{
+		executingThread = aptList[1]->thread;
+
+		executingThread->status = EXECUTING;
+
+		aptList[1] = removeThread(aptList[1], aptList[1]->thread);
+
+		swapcontext(&auxThread->context, &executingThread->context);
+	}
+
+	else if(aptList[2]->thread != NULL)
+	{
+		executingThread = aptList[2]->thread;
+
+		executingThread->status = EXECUTING;
+
+		aptList[2] = removeThread(aptList[2], aptList[2]->thread);
+
+		swapcontext(&auxThread->context, &executingThread->context);
+	}
 }
 

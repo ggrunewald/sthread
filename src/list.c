@@ -48,6 +48,59 @@ threadList * insertThread(threadList* list, tcb* thread)
 	return list;
 }
 
+tcb * threadSearch(threadList* list, int id)
+{
+	if(list == NULL)
+		return NULL;
+
+	threadList * auxList;
+
+	auxList = list;
+
+	while(auxList != NULL)
+		if(auxList->thread->tid == id)
+			return auxList->thread;
+		else
+			auxList = auxList->next;
+}
+
+threadList * removeThread(threadList* list, tcb * thread)
+{
+	//if not initialized list, no list to manipulate
+	if(list == NULL)
+		return NULL;
+
+	//if empty list, nothing to remove
+	if(list->thread == NULL)
+		return list;
+
+	//FIFO, always removes the first element of the queue
+	if(list->thread->tid == thread->tid)
+		return list->next;
+
+	threadList * auxList, * prevList;
+
+	prevList = list;
+	auxList = list->next;
+
+	while(auxList != NULL)
+	{
+		if(auxList->thread->tid == thread->tid)
+		{
+			prevList->next = auxList->next;
+
+			return list;
+		}
+		else
+		{
+			prevList = auxList;
+
+			auxList = auxList->next;
+		}
+	}
+
+	return NULL;
+}
 
 //manipulation of blocked threads by mutex
 int insertBlockqueue(smutex_t *mtx, tcb * thread)

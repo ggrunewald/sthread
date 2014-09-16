@@ -34,9 +34,6 @@ int main(int argc, char *argv[])
     	id0 = screate(0, func0, (void *)&i);
     	id1 = screate(1, func1, (void *)&i);
 
-	if(id0 == ERROR || id1 == ERROR)
-		printf("dammnn!");
-
     	printf("Eu sou a main após a criação de ID0 e ID1\n");
 
     	swait(id0);

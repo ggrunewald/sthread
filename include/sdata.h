@@ -40,12 +40,14 @@ void mutex_dest(smutex_t* mtx);		//destructor mutex
 
 
 int dispatcherInit();			//initializes the lists and other necessary structures
+void dispatcher();			//makes the context swap
 
 
 tcb * executingThread;			//thread at the ucp
 ucontext_t returnContext;		//return thread must return after its end
 
-struct threadList * aptList[3];
-struct threadList * blockedList;		//blocked threads (cant be executed)
+struct threadList * aptList[3];		//3 lists of apt threads separed by priority
+struct threadList * blockedList;	//blocked threads (cant be executed)
+struct threadList * allThreadsList;
 
 #endif

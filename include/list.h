@@ -13,7 +13,9 @@ typedef struct threadList		//struct for list manipulation of threads
 threadList * listInit();
 
 //manipulation of blocked threads by dispatcher and priority apt list
-threadList* insertThread(threadList* list, tcb* thread);
+threadList * insertThread(threadList* list, tcb* thread);
+tcb * threadSearch(threadList* list, int id);
+threadList * removeThread(threadList* list, tcb * thread);
 
 //manipulation of blocked threads by mutex
 int insertBlockqueue(smutex_t *mtx, tcb *thread);
