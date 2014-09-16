@@ -14,14 +14,43 @@ threadList * listInit()
 }
 
 //manipulation of blocked threads by dispatcher and priority apt list
-struct threadList* includeThread(struct threadList* list, struct TCB* tcb)
+threadList* insertThread(threadList* list, TCB* thread)
 {
+	if(thread == NULL)
+		return NULL;
 
+	//if list isn't initialized yet, initialize it
+	if(list == NULL)
+	{
+		list = listInit();
+		list->thread = thread;
+		return list;
+	}
+
+	//if first node included
+	if(list->thread == NULL)
+	{
+		list->thread = thread;
+		return list;
+	}
+
+	struct threadList* auxList = list;
+
+	//finds the last node of the queue
+	while(auxList->next != NULL)
+		auxList = auxList->next;
+
+	auxList->next = listInit();
+	auxList = auxList->next;
+	auxList->thread = thread;
+	auxList->next = NULL;
+
+	return list;
 }
 
 
 //manipulation of blocked threads by mutex
-int insert_in_blockqueue(smutex_t *mtx, TCB * thread)
+int insertBlockqueue(smutex_t *mtx, TCB * thread)
 {
 	if(mtx->first == 0)
 	{
@@ -38,7 +67,7 @@ int insert_in_blockqueue(smutex_t *mtx, TCB * thread)
 	return 1;
 }
 
-TCB * remove_from_blockqueue(smutex_t * mtx)
+TCB * removeBlockqueue(smutex_t * mtx)
 {
 	TCB * temp;
 
@@ -49,7 +78,7 @@ TCB * remove_from_blockqueue(smutex_t * mtx)
 	return temp;
 }
 
-TCB * search_in_blockqueue(smutex_t * mtx, int id)
+TCB * searchBlockqueue(smutex_t * mtx, int id)
 {
 	TCB * temp;
 

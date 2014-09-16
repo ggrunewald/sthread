@@ -23,7 +23,7 @@ typedef struct tcb
 	ucontext_t context;	//context that will be setted when this thread's status became executing
 	char stack[SIGSTKSZ];	//thread's stack
 	struct tcb * next;	//next TCB element of the queue
- } TCB;
+} TCB;
  
 typedef struct mutex 
 {
@@ -34,12 +34,12 @@ typedef struct mutex
 
 
 TCB * tcb_const(int p);			//constructor default TCB
-void tcb_dest(TCB* thread);		//destructor TCB
+void tcb_dest(TCB * thread);		//destructor TCB
 smutex_t* mutex_const();		//constructor default mutex
 void mutex_dest(smutex_t* mtx);		//destructor mutex
 
 
-int dispatcherInit(void);		//initializes the lists and other necessary structures
+int dispatcherInit();			//initializes the lists and other necessary structures
 
 
 TCB * executingThread;			//thread at the ucp

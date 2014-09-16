@@ -7,7 +7,7 @@ int threadCounter = 0;	//thread counter (usefull for identification)
 
 TCB* tcb_const(int p)
 {
-	TCB* thread = (TCB*)malloc(sizeof(TCB));	//allocate memory for the thread
+	TCB * thread = (TCB*)malloc(sizeof(TCB));	//allocate memory for the thread
 	thread->tid = threadCounter;			//initiallizes the thread with a defautl tid value
 	threadCounter++;				//increment thread counter (only place where threadCounter should be manipulated)
 	thread->next = NULL;				//set next to null
@@ -63,12 +63,17 @@ int screate (int prio, void (*start)(void*), void *arg)
 	makecontext(&newThread->context, (void*)(*start), 1, arg);
 
 	//include the newThread in the apt list of its priority
-	aptList[newThread->priority] = includeThread(aptList[newThread->priority], newThread);	
+	aptList[newThread->priority] = insertThread(aptList[newThread->priority], newThread);
+
+	//printf("%d\n", aptList[newThread->priority]->thread->priority);
+	newThread->priority;
+	aptList[newThread->priority];
+	aptList[newThread->priority]->thread;	//ERRO AQUI	
 
 	return SUCCESS;
 }
 
-int syield(void)
+int syield()
 {
 
 	return 0;
@@ -76,6 +81,7 @@ int syield(void)
 
 int swait(int tid)
 {
+	
 
 	return 0;
 }
@@ -98,7 +104,7 @@ int sunlock (smutex_t *mtx)
 	return 0;
 }
 
-int dispatcherInit(void)
+int dispatcherInit()
 {
 	int i;
 
@@ -120,11 +126,14 @@ int dispatcherInit(void)
 	if(executingThread->tid != 0)
 		return ERROR;
 
-	if(aptList[0] != NULL && aptList[1] != NULL && aptList[2] != NULL )
-		if(blockedList != NULL)
-			if(executingThread != NULL)
-				return SUCCESS;
+	if(aptList == NULL	||
+	   aptList[0] == NULL	|| 
+	   aptList[1] == NULL	|| 
+           aptList[2] == NULL	||
+	   blockedList == NULL	||
+	   executingThread == NULL)
+		return ERROR;
 
-	return ERROR;
+	return SUCCESS;
 }
 
