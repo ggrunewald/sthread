@@ -23,18 +23,18 @@ typedef struct tcb
 	ucontext_t context;	//context that will be setted when this thread's status became executing
 	char stack[SIGSTKSZ];	//thread's stack
 	struct tcb * next;	//next TCB element of the queue
-} TCB;
+}tcb;
  
 typedef struct mutex 
 {
 	int flag;		//if it is busy
-    	TCB *first;		//first element of blocked list
-	TCB *last;		//last element of blocked list
+    	struct tcb *first;	//first element of blocked list
+	struct tcb *last;	//last element of blocked list
 } smutex_t;
 
 
-TCB * tcb_const(int p);			//constructor default TCB
-void tcb_dest(TCB * thread);		//destructor TCB
+tcb * tcb_const(int p);			//constructor default TCB
+void tcb_dest(tcb * thread);		//destructor TCB
 smutex_t* mutex_const();		//constructor default mutex
 void mutex_dest(smutex_t* mtx);		//destructor mutex
 
@@ -42,10 +42,10 @@ void mutex_dest(smutex_t* mtx);		//destructor mutex
 int dispatcherInit();			//initializes the lists and other necessary structures
 
 
-TCB * executingThread;			//thread at the ucp
+tcb * executingThread;			//thread at the ucp
 ucontext_t returnContext;		//return thread must return after its end
 
 struct threadList * aptList[3];
-struct threadList * blockedList;	//blocked threads (cant be executed)
+struct threadList * blockedList;		//blocked threads (cant be executed)
 
 #endif

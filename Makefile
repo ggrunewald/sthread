@@ -8,7 +8,7 @@ CFLAG=-Wall
 
 all: clean libsthread.a
 
-libsthread.a: sthread.o list.o
+libsthread.a: list.o sthread.o
 	$(AR) crs $(LIB_DIR)libsthread.a $(BIN_DIR)sthread.o $(BIN_DIR)list.o
 
 sthread.o:

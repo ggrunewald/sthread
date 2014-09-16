@@ -1,13 +1,14 @@
 #include "../include/sthread.h"
+#include "../include/list.h"
 #include <stdlib.h>
 #include <stdio.h>	//remover quando estiver tudo funcionando ok e não precisar mais debugar
 
 int firstCall = TRUE;	//true if is the first time that screate is called
 int threadCounter = 0;	//thread counter (usefull for identification)
 
-TCB* tcb_const(int p)
+tcb* tcb_const(int p)
 {
-	TCB * thread = (TCB*)malloc(sizeof(TCB));	//allocate memory for the thread
+	tcb * thread = (tcb*)malloc(sizeof(tcb));	//allocate memory for the thread
 	thread->tid = threadCounter;			//initiallizes the thread with a defautl tid value
 	threadCounter++;				//increment thread counter (only place where threadCounter should be manipulated)
 	thread->next = NULL;				//set next to null
@@ -20,7 +21,7 @@ TCB* tcb_const(int p)
 	return thread;
 }
 
-void tcb_dest(TCB* thread) 
+void tcb_dest(tcb* thread) 
 {
 	free(thread);		//desallocate the memory
 }
@@ -45,7 +46,7 @@ int screate (int prio, void (*start)(void*), void *arg)
 		if (dispatcherInit() == ERROR)	//calls dispatcher initialization (also creates thread_main)
 			return ERROR;		//and verify if error at the initialization
 
-	TCB * newThread;
+	tcb * newThread;
 
 	newThread = tcb_const(prio);		//create the new child thread 
 
@@ -64,11 +65,6 @@ int screate (int prio, void (*start)(void*), void *arg)
 
 	//include the newThread in the apt list of its priority
 	aptList[newThread->priority] = insertThread(aptList[newThread->priority], newThread);
-
-	//printf("%d\n", aptList[newThread->priority]->thread->priority);
-	newThread->priority;
-	aptList[newThread->priority];
-	aptList[newThread->priority]->thread;	//ERRO AQUI	
 
 	return SUCCESS;
 }
