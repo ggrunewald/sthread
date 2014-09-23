@@ -18,7 +18,6 @@
  */
 
 #include	"../include/sthread.h"
-#include "../include/list.h"		//COLOCADO AQUI PARA FINS DE TESTES, NÃO DEVE SER NECESSÁRIO PARA EXECUTAR
 #include	<stdio.h>
 #include        <stdlib.h>
 #include 	<math.h>

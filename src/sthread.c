@@ -79,6 +79,9 @@ int screate (int prio, void (*start)(void*), void *arg)
 
 int syield()
 {
+	executingThread->status = APT;
+
+	dispatcher();
 
 	return 0;
 }
@@ -213,10 +216,18 @@ void dispatcher()
 			removeThread(aptList[i], executingThread->tid);
 
 			if(auxThread->status == BLOCKED)
+			{
 				insertThread(blockedList, auxThread);			//insert in blocked list
-			
+
+				blockedList->count++;
+			}
+
 			else if(auxThread->status == APT)
+			{
 				insertThread(aptList[auxThread->priority], auxThread);	//insert in apt list
+
+				aptList[auxThread->priority]->count++;
+			}
 
 			setcontext(&executingThread->context);
 		}
