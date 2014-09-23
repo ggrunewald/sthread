@@ -22,7 +22,3 @@ mandel: mandel.c $(LIB_DIR)/libsthread.a
 
 clean:
 	rm -rf exemplo mandel teste_vetor teste_prio *~
-
-
-
-

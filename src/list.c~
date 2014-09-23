@@ -3,54 +3,81 @@
 
 #include "../include/list.h"
 
+//list constructor
 threadList * listInit()
 {
 	threadList * newList = (threadList *)malloc(sizeof(threadList));
-	newList->next = NULL;
-	newList->thread = NULL;
+
+	newList->first = NULL;
+	newList->last = NULL;
+	newList->count = 0;
 
 	return newList;
 }
 
-int insert_in_blockqueue(smutex_t *mtx, TCB * thread)
+//insert a thread at the list
+threadList* insert(threadList* list, tcb* thread)
 {
-	if(mtx->first == 0)
+	if(list->first == NULL)
 	{
-		mtx->first = thread;
-		mtx->last = thread;
+		list->first = thread;
+		list->last = thread;
 	}
 	
 	else
 	{
-		mtx->last->next = thread;
-		mtx->last = thread;
+		list->last->next = thread;
+		list->last = thread;
 	}
 
-	return 1;
+	list->count++;
+
+	return list;
 }
 
-TCB * remove_from_blockqueue(smutex_t * mtx)
+//remove a thread from the list
+threadList* removeThread(threadList* list, int id)
 {
-	TCB * temp;
+	if(list->first->tid == id)
+		list->first = list->first->next;
 
-	temp = mtx->first;
+	else
+	{
+		tcb* pointer;
+		tcb* previous;
 
-	mtx->first = mtx->first->next;
+		previous = list->first;
+		pointer = list->first->next;
 
-	return temp;
+		while(pointer != NULL)
+			if(pointer->tid == id)
+			{
+				previous->next = pointer->next;
+				return list;
+			}
+			else
+			{
+				previous = pointer;
+				pointer = pointer->next;
+			}	
+	}
+
+	return list;
 }
 
-TCB * search_in_blockqueue(smutex_t * mtx, int id)
+tcb* search(threadList* list, int id)
 {
-	TCB * temp;
+	tcb * temp;
 
-	temp = mtx->first;
-
-	while(temp != 0)
+	temp = list->first;
+printf("search ");
+	while(temp != NULL)
+{
+printf("%d ", temp->tid);
 		if(temp->tid == id)
 			return temp;
 		else
 			temp = temp->next;
-	
-	return 0;
+}
+	return NULL;
 }

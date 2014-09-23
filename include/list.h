@@ -5,21 +5,18 @@
 
 typedef struct threadList		//struct for list manipulation of threads
 {
-	struct tcb * thread;			//data
-	struct threadList * next;	//pointer to the next element of list
+	struct tcb * first;		//data
+	struct tcb * last;		//pointer to the next element of list
+	int count;
 }threadList;
 
 //struct constructor
 threadList * listInit();
 
-//manipulation of blocked threads by dispatcher and priority apt list
-threadList * insertThread(threadList* list, tcb* thread);
-tcb * threadSearch(threadList* list, int id);
-threadList * removeThread(threadList* list, tcb * thread);
-
-//manipulation of blocked threads by mutex
-int insertBlockqueue(smutex_t *mtx, tcb *thread);
-tcb * removeBlockqueue(smutex_t *mtx);
-tcb * searchBlockqueue(smutex_t *mtx, int id);
+//manipulation of thread lists
+void insertThread(threadList* list, tcb* thread);
+tcb* searchThread(int id);
+void removeThread(threadList* list, int id);
+int alreadyInList(threadList* list, int id);
 
 #endif

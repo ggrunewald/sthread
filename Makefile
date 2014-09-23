@@ -21,5 +21,3 @@ list.o:
 
 clean:
 	rm -rf $(LIB_DIR)*.a $(BIN_DIR)*.o $(SRC_BIN)*~ $(INC_BIN)*~ *~
-
-
