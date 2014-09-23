@@ -71,7 +71,9 @@ int screate (int prio, void (*start)(void*), void *arg)
 
 	//insert the newThread in the apt list of its priority
 	insertThread(aptList[newThread->priority], newThread);
-printf("incluiu = %d\n", aptList[newThread->priority]->last->tid);
+
+	printf("incluiu = %d em [%d]\n", aptList[newThread->priority]->last->tid, aptList[newThread->priority]->last->priority);
+
 	return aptList[newThread->priority]->last->tid;
 }
 

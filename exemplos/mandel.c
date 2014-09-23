@@ -4,9 +4,9 @@
  *           threads. O espaço de cálculo é dividido em 't' linhas onde 't'
  *           é o número de threads usadas.
  *
- * usage:    mandel [+n size] [+c cr0 ci0 cr1 ci] [+t threads] [+l lim] [+p]
+ * usage:    mandel [+n size] [+c cr0 ci0 cr1 ci1] [+t threads] [+l lim] [+p]
  *           onde:
- *                size=tamanho da imagem, (cr0,ci0) e (cr1, ci1) sãocoordenadas
+ *                size=tamanho da imagem, (cr0,ci0) e (cr1, ci1) são coordenadas
  *                da diagonal do plano de cálculo, t=nro de threads, lim=limite
  *                de convergência e p=flag para geração da imagem.
  *
@@ -18,6 +18,7 @@
  */
 
 #include	"../include/sthread.h"
+#include "../include/list.h"		//COLOCADO AQUI PARA FINS DE TESTES, NÃO DEVE SER NECESSÁRIO PARA EXECUTAR
 #include	<stdio.h>
 #include        <stdlib.h>
 #include 	<math.h>
@@ -39,11 +40,10 @@ double  distance(double a, double b) {
     return (a*a + b*b);
 }
 
-void*   mandel(void *arg) {
+void mandel(void *arg) {
     double dx, dy, z_r, z_i, c_r, c_i, c0_r, c0_i, c1_r, c1_i, aux;
     int i, j, k, lim, n, t, tid, yi, yf;
     int *plan;
-
 
     /* Faz uma copia da regiao global para manter em memoria local */
 
@@ -89,7 +89,6 @@ void*   mandel(void *arg) {
             plan[(i-yi)*n+j] = (int)(k*((double)255/lim)+ 0.5i);
           }
       }
-    return(NULL);
 }
 
 void usage(void) {
@@ -159,8 +158,12 @@ int main(int argc, char **argv) {
            error("ERRO: Problema na criacao de thread worker\n");
     }
 
-    for (i=0; i<t; i++) 
-        swait(workers[i]);
+    for (i=0; i<t; i++)
+	swait(workers[i]);
+
+	//printf("%d\n", aptList[1]->first->tid);
+	//printf("%d\n", aptList[1]->last->tid);
+	//printf("%d\n", aptList[1]->count);
 
     /*
      * Geração de um arquivo ppm com a figura do fractal. P3 é um número

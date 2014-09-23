@@ -94,11 +94,11 @@ tcb* searchThread(int id)
 	for(i = 0; i<3; i++)
 	{
 		if(aptList[i]->count == 0)
-			break;
+			continue;
 
 		temp = aptList[i]->first;
 
-		while(temp != 0)
+		while(temp != NULL)
 		{
 			if(temp->tid == id)
 				return temp;

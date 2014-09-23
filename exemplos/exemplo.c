@@ -9,7 +9,6 @@
  */
 
 #include "../include/sthread.h"
-#include "../include/list.h"
 
 #include <stdio.h>
 
@@ -37,7 +36,7 @@ int main(int argc, char *argv[])
 	id3 = screate(2, func0, (void *)&k);
     	id4 = screate(2, func1, (void *)&l);
 
-    	printf("Eu sou a main depois da criação das threads\n");
+    	printf("Eu sou a main depois da criacao das threads\n");
 
 	swait(id1);
 //	swait(id2);
