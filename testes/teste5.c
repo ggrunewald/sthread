@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "sthread.h"
+#include "../include/sthread.h"
 
 void func(void* n)
 {

@@ -1,17 +1,19 @@
-#include "sthread.h"
+#include "../include/sthread.h"
+#include "../include/list.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_THREADS 1000
-#define MAX_WORK 100000
+#define MAX_THREADS 2
+#define MAX_WORK 15
 
-mmutex_t mutex;
+smutex_t mutex;
 int workDone = 0;
 int lastWork = -1;
 
 void makeWork()
 {
 	syield();
+
 	while(workDone < MAX_WORK)
 	{
 		slock(&mutex);
@@ -26,10 +28,14 @@ void makeWork()
 		}
 		if (workDone < MAX_WORK)
 		{
-			printf("Work #%d done.\n", workDone);
+			printf("Work #%d done by thread #%d. In aptList: %d\n", workDone, executingThread->tid, aptList[executingThread->priority]->first->tid);
+			printf("Still %d threads in aptList[%d].\n\n", aptList[executingThread->priority]->count, executingThread->priority);
 			syield();
 		}
+		printf("#%d ended.\n", executingThread->tid);
+		printf("In aptList: %d\n", aptList[executingThread->priority]->first->tid);
 	}
+printf("workDone: %d.\n", workDone);
 }
 
 int main ()

@@ -27,7 +27,7 @@ typedef struct tcb
  
 typedef struct mutex 
 {
-	int flag;			//if it is occupied = true
+	int locked;			//if it is locked = true
     	struct threadList * blockList;	//list of blocked threads by this mutex
 } smutex_t;
 
@@ -39,7 +39,7 @@ void mutex_dest(smutex_t* mtx);		//destructor mutex
 
 
 int dispatcherInit();			//initializes the lists and other necessary structures
-void dispatcher();			//makes the context swap
+void dispatcher(int isMutex);		//makes the context swap
 
 
 tcb * executingThread;			//thread at the ucp

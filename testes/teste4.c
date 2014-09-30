@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "sthread.h"
+#include "../include/sthread.h"
 
 #define MAX_THREADS 50
 

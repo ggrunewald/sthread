@@ -8,7 +8,7 @@
 */
 
 
-#include "sthread.h"
+#include "../include/sthread.h"
 #include <stdio.h>
 #include <stdlib.h>
 

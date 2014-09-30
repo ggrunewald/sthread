@@ -18,15 +18,22 @@ threadList * listInit()
 //insert a thread at the list
 void insertThread(threadList* list, tcb* thread)
 {
-	if(alreadyInList(list, thread->tid) == TRUE)
+	if(alreadyInList(list, thread->tid))
 		return;
 
-	if(list->first == NULL)
+	if(list->first == NULL && list->last == NULL)
 	{
 		list->first = thread;
 		list->last = thread;
 	}
-	
+	else if(list->first == NULL && list->last != NULL)
+	{
+		printf("ERRO 1 %d!\n", thread->tid);
+	}
+	else if(list->first != NULL && list->last == NULL)
+	{
+		printf("ERRO 2 %d!\n", thread->tid);
+	}
 	else
 	{
 		list->last->next = thread;
@@ -37,14 +44,25 @@ void insertThread(threadList* list, tcb* thread)
 }
 
 //remove a thread from the list
-void removeThread(threadList* list, int id)
+int removeThread(threadList* list, int id)
 {
 	if(list->count == 0)	//if the list is empty, nothing to be removed
-		return ;
+		return ERROR;
 
-	if(list->first->tid == id)
-		list->first = list->first->next;
+	if(list->count == 1)
+	{
+		list->first = NULL;
+		list->last = NULL;
+		list->count = 0;
+		return SUCCESS;
+	}
 
+	else if(list->count == 2)
+	{
+		list->first = list->last;
+		list->count = 1;
+		return SUCCESS;
+	}
 	else
 	{
 		tcb* pointer;
@@ -54,26 +72,29 @@ void removeThread(threadList* list, int id)
 		pointer = list->first->next;
 
 		while(pointer != NULL)
+		{
 			if(pointer->tid == id)
 			{
 				previous->next = pointer->next;
-				return ;
+				list->count--;
+				return SUCCESS;
 			}
 			else
 			{
 				previous = pointer;
 				pointer = pointer->next;
 			}
+		}
 	}
 
-	list->count--;
+	return ERROR;
 }
 
 int alreadyInList(threadList * list, int id)
 {
 	tcb * temp = list->first;	
 
-	while(temp != 0)
+	while(temp != NULL)
 	{
 		if(temp->tid == id)
 			return TRUE;
@@ -93,34 +114,28 @@ tcb* searchThread(int id)
 
 	for(i = 0; i<3; i++)
 	{
-		if(aptList[i]->count == 0)
+		if(aptList[i]->count <= 0)
 			continue;
 
 		temp = aptList[i]->first;
 
 		while(temp != NULL)
-		{
 			if(temp->tid == id)
 				return temp;
-
 			else
 				temp = temp->next;
-		}
 	}
 
 	temp = blockedList->first;
 
-	if(blockedList->count == 0)
-		return 0;
+	if(blockedList->count <= 0)
+		return NULL;
 
 	while(temp != 0)
-	{
 		if(temp->tid == id)
 			return temp;
-
 		else
 			temp = temp->next;
-	}
-	
-	return 0;
+
+	return NULL;
 }
