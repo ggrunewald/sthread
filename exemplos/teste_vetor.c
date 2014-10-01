@@ -5,8 +5,6 @@
  */
 
 #include	"../include/sthread.h"
-#include	"../include/list.h"	//INCLUÍDO PARA FINS DE DEBUG, REMOVER AO TERMINAR IMPLEMENTAÇÃO DO YIELD!
-
 #include	<stdio.h>
 #include        <stdlib.h>
 
@@ -16,54 +14,44 @@
 int vetor[MAX_SIZE];
 int  inc = 0;
 
-void func(void *arg)
-{
-   while ( inc < MAX_SIZE ) 
-   {
+void *func(void *arg){
+
+   while ( inc < MAX_SIZE ) {
        vetor[inc] = (int)arg;
-
        inc++;
-
-       	if ( (inc % 20) == 0 )
-	{
-		printf("\nPRIMEIRO NA FILA DE APTOS = %d\n", aptList[1]->first->next->tid);
-		syield();
-	}
-
+       if ( (inc % 20) == 0 )
+           syield();
        else
            continue;
    }
+
+   return (NULL);
 }
 
 
-int main(int argc, char *argv[]) 
-{
+int main(int argc, char *argv[]) {
     int i, pid[MAX_THR];
+
   
-    for (i = 0; i < MAX_THR; i++) 
-    {
+    for (i = 0; i < MAX_THR; i++) {
         pid[i] = screate(1, func, (void *)('A'+i));
-       	
-	if ( pid[i] == -1) 
-	{
+       if ( pid[i] == -1) {
           printf("ERRO: criação de thread!\n");
           exit(-1);
-	}
+       }
      }
 
     for (i = 0; i < MAX_THR; i++) 
          swait(pid[i]);
 
-    for (i = 0; i < MAX_SIZE; i++) 
-    {    
-	if ( (i % 20) == 0 )
-		printf("\n");
-
-	printf("%c", (char)vetor[i]);
+    for (i = 0; i < MAX_SIZE; i++) {    
+        if ( (i % 20) == 0 )
+           printf("\n");
+        printf("%c", (char)vetor[i]);
     }
+
       
     printf("\nConcluido vetor de letras...\n");
-
-	return 0;
+    exit(0);
 }
 

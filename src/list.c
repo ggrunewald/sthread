@@ -18,8 +18,14 @@ threadList * listInit()
 //insert a thread at the list
 void insertThread(threadList* list, tcb* thread)
 {
+	printf("insert thread %d\n", thread->tid);
+	printf("status da thread %d\n", thread->status);
+
 	if(alreadyInList(list, thread->tid))
+	{
+		printf("already in list!!!!\n");
 		return;
+	}
 
 	if(list->first == NULL && list->last == NULL)
 	{
@@ -40,6 +46,8 @@ void insertThread(threadList* list, tcb* thread)
 		list->last = thread;
 	}
 
+	printf("inserted %d!!!!\n", list->last->tid);
+
 	list->count++;
 }
 
@@ -59,8 +67,11 @@ int removeThread(threadList* list, int id)
 
 	else if(list->count == 2)
 	{
+		tcb * tmp;
+		tmp = list->first;
 		list->first = list->last;
 		list->count = 1;
+		tmp->next = NULL;
 		return SUCCESS;
 	}
 	else
@@ -73,8 +84,11 @@ int removeThread(threadList* list, int id)
 
 		if(list->first->tid == id)
 		{
+			tcb * tmp;
+			tmp = list->first;
 			list->first = list->first->next;
 			list->count--;
+			tmp->next = NULL;
 			return SUCCESS;
 		}
 
@@ -83,6 +97,7 @@ int removeThread(threadList* list, int id)
 			if(pointer->tid == id)
 			{
 				previous->next = pointer->next;
+				pointer->next = NULL;
 				list->count--;
 				return SUCCESS;
 			}
@@ -100,16 +115,17 @@ int removeThread(threadList* list, int id)
 int alreadyInList(threadList * list, int id)
 {
 	tcb * temp = list->first;	
-
+printf("searching %d: ", id);
 	while(temp != NULL)
 	{
+	printf("%d ", temp->tid);
 		if(temp->tid == id)
 			return TRUE;
 
 		else
 			temp = temp->next;
 	}
-
+printf("\n");
 	return FALSE;
 }
 

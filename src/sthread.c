@@ -273,9 +273,10 @@ int dispatcherInit()
 void dispatcher(int isMutex)
 {
 	tcb * auxThread = executingThread;
-
+printf("TESTE 3 %d oi\n", executingThread->tid);sleep(1);
 	int i;
-
+printf("contador da lista de aptos: %d\n", aptList[1]->count);//sleep(1);
+printf("thread sendo executada: %d\n", executingThread->tid);
 	for(i = 0; i < 3; i++)	
 	{
 		if(aptList[i]->count > 0)
@@ -286,9 +287,13 @@ void dispatcher(int isMutex)
 
 			removeThread(aptList[i], executingThread->tid);
 
+printf("TESTE 2 %d\n", aptList[i]->count);
+
+printf("TESTE 4\n");
 			if(auxThread->status == BLOCKED && !isMutex)
 			{
 				insertThread(blockedList, auxThread);			//insert in blocked list
+
 				swapcontext(&auxThread->context, &executingThread->context);
 			}
 			else if(auxThread->status == BLOCKED && isMutex)
@@ -297,11 +302,14 @@ void dispatcher(int isMutex)
 			}
 			else if(auxThread->status == APT)
 			{
+				printf("TESTE APT\n");
 				insertThread(aptList[auxThread->priority], auxThread);	//insert in apt list
+
 				swapcontext(&auxThread->context, &executingThread->context);
 			}
 			else if(auxThread->status == ENDED)
 			{
+				printf("TESTE ENDED\n");
 				auxThread = NULL;
 
 				setcontext(&executingThread->context);

@@ -3,8 +3,9 @@
 #include <stdlib.h>
 #include <stdio.h>	//remover quando estiver tudo funcionando ok e não precisar mais debugar
 
-int firstCall = TRUE;	//true if is the first time that screate is called
-int threadCounter = 0;	//thread counter (usefull for identification)
+int firstCall = TRUE;		//controls if must create the thread main
+int threadCounter = 0;		//thread counter (usefull for identification)
+int mutexInitiallized = FALSE;	//controls if user called smutex_init or slock should call it
 
 tcb* tcb_const(int p)
 {
@@ -32,7 +33,7 @@ smutex_t* mutex_const()
 
 	mtx->blockList = listInit();
 
-	mtx->flag = FALSE;
+	mtx->locked = FALSE;
 
 	return mtx;
 }
@@ -70,18 +71,20 @@ int screate (int prio, void (*start)(void*), void *arg)
 	newThread->status = APT;
 
 	//insert the newThread in the apt list of its priority
-	aptList[newThread->priority] = insert(aptList[newThread->priority], newThread);
+	insertThread(aptList[newThread->priority], newThread);
 
-	//insert the newThread in the list that holds all managed threads
-	allThreadsList = insert(allThreadsList, newThread);
-
-	return newThread->tid;
+	return aptList[newThread->priority]->last->tid;
 }
 
+//current executing thread liberates the cpu
+//and is inserted at the apt list
 int syield()
 {
+	executingThread->status = APT;
 
-	return 0;
+	dispatcher(FALSE);
+
+	return SUCCESS;
 }
 
 
@@ -89,36 +92,37 @@ int syield()
 //return SUCCESS if successful
 int swait(int tid)
 {
-printf("0");
-	tcb * waitedThread = search(allThreadsList, tid);		//thread that is waited to finish its execution
+	tcb * waitedThread = searchThread(tid);				//thread that is waited to finish its execution
+
 	tcb * callerThread = executingThread;				//thread that called swait
 
 	if(waitedThread == NULL)					//veririfies if user tried to wait for a non existant thread
 		return ERROR;
-printf("1");
-	callerThread->status = BLOCKED;					//blocks the caller thread
 
-	blockedList = insert(blockedList, callerThread);		//insert it at blocked list
+	if(waitedThread->status == ENDED)
+		return ERROR;
+
+	callerThread->status = BLOCKED;					//blocks the caller thread
 
 	getcontext(&returnContext); 					//terminated threads will return to this point
 
 	int ret = 0;
-printf("2");
-	if(executingThread->tid == waitedThread->tid)			//if its the waited thread (it already terminated its execution)
+
+	if(executingThread->tid != callerThread->tid)			//if its the waited thread (it already terminated its execution)
 	{
-		ret = 1;
+		if(executingThread->tid == waitedThread->tid)
+		{
+			ret = 1;
 
-		waitedThread->status = ENDED;				//set its status to ended (will not run again)
+			callerThread->status = APT;				//make the waiter APT again
 
-		callerThread->status = APT;				//make the waiter APT again
-printf("3");
-		allThreadsList = removeThread(allThreadsList, waitedThread);
+			removeThread(blockedList, callerThread->tid);		//remove it from the blocked list
 
-		blockedList = removeThread(blockedList, callerThread);	//remove it from the blocked list
+			insertThread(aptList[callerThread->priority], callerThread);
+		}
+		executingThread->status = ENDED;			//set its status to ended (will not run again)
 
-		aptList[callerThread->priority] = insert(aptList[callerThread->priority], callerThread);
-printf("4");
-		dispatcher();
+		dispatcher(FALSE);
 	}
 	
 	else if(executingThread->tid == callerThread->tid)
@@ -128,8 +132,8 @@ printf("4");
 			//quits the eternal loop when the waited thread have terminated
 			if(executingThread->tid == waitedThread->tid && ret == 1)
 				break;
-printf("5");
-			dispatcher();
+
+			dispatcher(FALSE);
 		}
 	}
 
@@ -138,20 +142,90 @@ printf("5");
 
 int smutex_init(smutex_t *mtx)
 {
+	mtx = mutex_const();		//initiallizes the mutex
 
-	return 0;
+	mutexInitiallized = TRUE;
+
+	if(mtx == NULL)
+		return ERROR;
+
+	return SUCCESS;
 }
 
 int slock (smutex_t *mtx)
 {
+	/*
+	printf("SLOCK INICIO!\n");
 
-	return 0;
+	if(!mutexInitiallized)
+		if(smutex_init(mtx) == ERROR)
+			return ERROR;
+
+	if(mtx->locked)
+	{
+		insertThread(mtx->blockList, executingThread);
+
+		executingThread->status = BLOCKED;
+
+		getcontext(&executingThread->context);
+
+		while(mtx->locked)
+			dispatcher(TRUE);
+	}
+
+	else
+	{
+		mtx->locked = TRUE;
+	}
+
+	printf("SLOCK FIM!\n");
+
+	return SUCCESS;
+	*/
 }
 
 int sunlock (smutex_t *mtx)
 {
+	/*
+	printf("SUNLOCK INICIO!\n");
 
-	return 0;
+	if(!mtx->locked)
+	{
+		printf("SUNLOCK FIM ERROR!\n");
+		return ERROR;
+	}
+
+	mtx->locked = FALSE;
+
+	printf("SUNLOCK 1!\n");
+
+	printf("que0\n");
+	mtx;
+	printf("que1\n");
+	mtx->blockList;
+	printf("que2\n");
+	mtx->blockList->count;
+	printf("que3\n");
+
+	/*
+	if(mtx->blockList->count > 0)
+	{
+	printf("SUNLOCK 2!\n");
+		tcb * thread;
+
+		thread = mtx->blockList->first;
+	printf("SUNLOCK 3!\n");
+		removeThread(mtx->blockList, mtx->blockList->first->tid);
+	printf("SUNLOCK 4!\n");
+		thread->status = APT;
+	printf("SUNLOCK 5!\n");
+		insertThread(aptList[thread->priority], thread);
+	}
+	*/
+
+	//printf("SUNLOCK FIM!\n");
+
+	return SUCCESS;
 }
 
 int dispatcherInit()
@@ -165,18 +239,21 @@ int dispatcherInit()
 	//initializing the blocked threads list
 	blockedList = listInit();
 
-	//initializing the list that holds all the threads that have been created
-	allThreadsList = listInit();
-
 	//sets the firstCall to false, because this function should be executed once
 	firstCall = FALSE;
 
 	//creation of the first thread (main_thread)
-	executingThread = tcb_const(2);
+	executingThread = tcb_const(2);			//MUDAR PARA PRIORIDADE BAIXA. UTILIZANDO PRIORIDADE
+							//DIFERENTE DA ESTABELECIDA PARA FINS DE TESTES
 	executingThread->status = EXECUTING;
 
-	//insert the newThread in the list that holds all managed threads
-	allThreadsList = insert(allThreadsList, executingThread);
+	//gets the current context and save it in the newThread just created
+	getcontext(&executingThread->context);
+
+	//modify de newThread context to return to the context pointed by returnContext
+	executingThread->context.uc_link = &returnContext;		
+	executingThread->context.uc_stack.ss_sp = executingThread->stack;
+	executingThread->context.uc_stack.ss_size = sizeof(executingThread->stack);
 
 	if(executingThread->tid != 0)
 		return ERROR;
@@ -187,39 +264,57 @@ int dispatcherInit()
 	   aptList[1] == NULL	  || 
            aptList[2] == NULL	  ||
 	   blockedList == NULL	  ||
-	   allThreadsList == NULL ||
 	   executingThread == NULL)
 		return ERROR;
 
 	return SUCCESS;
 }
 
-void dispatcher()
+void dispatcher(int isMutex)
 {
 	tcb * auxThread = executingThread;
-
+printf("TESTE 3 %d oi\n", executingThread->tid);sleep(1);
 	int i;
-
+printf("contador da lista de aptos: %d\n", aptList[1]->count);//sleep(1);
+printf("thread sendo executada: %d\n", executingThread->tid);
 	for(i = 0; i < 3; i++)	
 	{
 		if(aptList[i]->count > 0)
 		{
-			executingThread = aptList[i]->first;
+			executingThread = aptList[i]->first;				//gets next executed thread
 
 			executingThread->status = EXECUTING;
 
-			aptList[i] = removeThread(aptList[i], aptList[i]->first->tid);
+			removeThread(aptList[i], executingThread->tid);
 
-			if(auxThread->status != ENDED)
+printf("TESTE 2 %d\n", aptList[i]->count);
+
+printf("TESTE 4\n");
+			if(auxThread->status == BLOCKED && !isMutex)
 			{
-				auxThread->status = APT;
+				insertThread(blockedList, auxThread);			//insert in blocked list
 
-				aptList[auxThread->priority] = insert(aptList[auxThread->priority], auxThread);
+				swapcontext(&auxThread->context, &executingThread->context);
 			}
+			else if(auxThread->status == BLOCKED && isMutex)
+			{
+				swapcontext(&auxThread->context, &executingThread->context);
+			}
+			else if(auxThread->status == APT)
+			{
+				printf("TESTE APT\n");
+				insertThread(aptList[auxThread->priority], auxThread);	//insert in apt list
 
-			setcontext(&executingThread->context);
+				swapcontext(&auxThread->context, &executingThread->context);
+			}
+			else if(auxThread->status == ENDED)
+			{
+				printf("TESTE ENDED\n");
+				auxThread = NULL;
+
+				setcontext(&executingThread->context);
+			}
 		}
 	}
-
 }
 
