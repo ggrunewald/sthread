@@ -73,8 +73,6 @@ int screate (int prio, void (*start)(void*), void *arg)
 	//insert the newThread in the apt list of its priority
 	insertThread(aptList[newThread->priority], newThread);
 
-	printf("incluiu = %d em [%d]\n", aptList[newThread->priority]->last->tid, aptList[newThread->priority]->last->priority);
-
 	return aptList[newThread->priority]->last->tid;
 }
 
@@ -86,7 +84,7 @@ int syield()
 
 	dispatcher(FALSE);
 
-	return 0;
+	return SUCCESS;
 }
 
 
@@ -112,15 +110,17 @@ int swait(int tid)
 
 	if(executingThread->tid != callerThread->tid)			//if its the waited thread (it already terminated its execution)
 	{
-		ret = 1;
-printf("MINHA ROLA!");
+		if(executingThread->tid == waitedThread->tid)
+		{
+			ret = 1;
+
+			callerThread->status = APT;				//make the waiter APT again
+
+			removeThread(blockedList, callerThread->tid);		//remove it from the blocked list
+
+			insertThread(aptList[callerThread->priority], callerThread);
+		}
 		executingThread->status = ENDED;			//set its status to ended (will not run again)
-
-		callerThread->status = APT;				//make the waiter APT again
-
-		removeThread(blockedList, callerThread->tid);		//remove it from the blocked list
-
-		insertThread(aptList[callerThread->priority], callerThread);
 
 		dispatcher(FALSE);
 	}
@@ -154,8 +154,9 @@ int smutex_init(smutex_t *mtx)
 
 int slock (smutex_t *mtx)
 {
-/*
-printf("SLOCK INICIO!\n");
+	/*
+	printf("SLOCK INICIO!\n");
+
 	if(!mutexInitiallized)
 		if(smutex_init(mtx) == ERROR)
 			return ERROR;
@@ -176,15 +177,18 @@ printf("SLOCK INICIO!\n");
 	{
 		mtx->locked = TRUE;
 	}
-printf("SLOCK FIM!\n");
+
+	printf("SLOCK FIM!\n");
+
 	return SUCCESS;
-*/
+	*/
 }
 
 int sunlock (smutex_t *mtx)
 {
-/*
-printf("SUNLOCK INICIO!\n");
+	/*
+	printf("SUNLOCK INICIO!\n");
+
 	if(!mtx->locked)
 	{
 		printf("SUNLOCK FIM ERROR!\n");
@@ -193,32 +197,34 @@ printf("SUNLOCK INICIO!\n");
 
 	mtx->locked = FALSE;
 
-printf("SUNLOCK 1!\n");
+	printf("SUNLOCK 1!\n");
 
-printf("que0\n");
-mtx;
-printf("que1\n");
-mtx->blockList;
-printf("que2\n");
-mtx->blockList->count;
-printf("que3\n");
+	printf("que0\n");
+	mtx;
+	printf("que1\n");
+	mtx->blockList;
+	printf("que2\n");
+	mtx->blockList->count;
+	printf("que3\n");
 
-/*
+	/*
 	if(mtx->blockList->count > 0)
 	{
-printf("SUNLOCK 2!\n");
+	printf("SUNLOCK 2!\n");
 		tcb * thread;
 
 		thread = mtx->blockList->first;
-printf("SUNLOCK 3!\n");
+	printf("SUNLOCK 3!\n");
 		removeThread(mtx->blockList, mtx->blockList->first->tid);
-printf("SUNLOCK 4!\n");
+	printf("SUNLOCK 4!\n");
 		thread->status = APT;
-printf("SUNLOCK 5!\n");
+	printf("SUNLOCK 5!\n");
 		insertThread(aptList[thread->priority], thread);
 	}
-*/
-//printf("SUNLOCK FIM!\n");
+	*/
+
+	//printf("SUNLOCK FIM!\n");
+
 	return SUCCESS;
 }
 
@@ -297,6 +303,7 @@ void dispatcher(int isMutex)
 			else if(auxThread->status == ENDED)
 			{
 				auxThread = NULL;
+
 				setcontext(&executingThread->context);
 			}
 		}

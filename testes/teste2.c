@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_THREADS 2
-#define MAX_WORK 15
+#define MAX_THREADS 30
+#define MAX_WORK 1500
 
 smutex_t mutex;
 int workDone = 0;
@@ -16,10 +16,10 @@ void makeWork()
 
 	while(workDone < MAX_WORK)
 	{
-		slock(&mutex);
+		//slock(&mutex);
 		lastWork = workDone;
 		workDone++;
-		sunlock(&mutex);
+		//sunlock(&mutex);
 		if (workDone <= lastWork || workDone -1 != lastWork)
 		{
 			puts("Mutual Exclusion error!!!!!!!");
@@ -28,14 +28,14 @@ void makeWork()
 		}
 		if (workDone < MAX_WORK)
 		{
+
 			printf("Work #%d done by thread #%d. In aptList: %d\n", workDone, executingThread->tid, aptList[executingThread->priority]->first->tid);
-			printf("Still %d threads in aptList[%d].\n\n", aptList[executingThread->priority]->count, executingThread->priority);
+
 			syield();
 		}
-		printf("#%d ended.\n", executingThread->tid);
-		printf("In aptList: %d\n", aptList[executingThread->priority]->first->tid);
+
+		//printf("#%d ended.\n", executingThread->tid);
 	}
-printf("workDone: %d.\n", workDone);
 }
 
 int main ()

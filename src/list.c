@@ -71,6 +71,13 @@ int removeThread(threadList* list, int id)
 		previous = list->first;
 		pointer = list->first->next;
 
+		if(list->first->tid == id)
+		{
+			list->first = list->first->next;
+			list->count--;
+			return SUCCESS;
+		}
+
 		while(pointer != NULL)
 		{
 			if(pointer->tid == id)

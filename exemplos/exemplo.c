@@ -31,29 +31,29 @@ int main(int argc, char *argv[])
 
     	int i = 1, j = 2, k = 3, l = 4;
 
-    	id1 = screate(0, func0, (void *)&i);
-    	id2 = screate(1, func1, (void *)&j);
-	id3 = screate(2, func0, (void *)&k);
-    	id4 = screate(2, func1, (void *)&l);
+    	id1 = screate(1, func0, (void *)&i);
+    	id2 = screate(0, func1, (void *)&j);
+	id3 = screate(1, func0, (void *)&k);
+    	id4 = screate(0, func1, (void *)&l);
 
     	printf("Eu sou a main depois da criacao das threads\n");
 
 	swait(id1);
-//	swait(id2);
-//	swait(id3);
-//	swait(id4);
+	swait(id2);
+	swait(id3);
+	swait(id4);
 
 	int id5, id6, id7, id8;
 	int a = 5, b=6, c=7, d=8;
 
-	id5 = screate(0, func0, (void *)&a);
-    	id6 = screate(1, func1, (void *)&b);
-	id7 = screate(0, func0, (void *)&c);
-    	id8 = screate(2, func1, (void *)&d);
+	id5 = screate(2, func0, (void *)&a);
+    	id6 = screate(0, func1, (void *)&b);
+	id7 = screate(1, func0, (void *)&c);
+    	id8 = screate(1, func1, (void *)&d);
 
-//	swait(id5);
-//	swait(id6);
-//	swait(id7);
+	swait(id5);
+	swait(id6);
+	swait(id7);
 	swait(id8);
 
     	printf("Eu sou a main voltando para terminar o programa\n");
