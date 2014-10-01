@@ -9,10 +9,10 @@
 #define SUCCESS 0
 #define ERROR -1
 
-#define	APT 0				//may be executed
-#define	BLOCKED 1			//cant be executed
-#define	EXECUTING 2			//being executed
-#define	CREATED 3			//recently created
+#define	APT 1				//may be executed
+#define	BLOCKED 2			//cant be executed
+#define	EXECUTING 3			//being executed
+#define	CREATED 0			//recently created
 #define	ENDED 4				//already executed and ended
 
 typedef struct tcb 

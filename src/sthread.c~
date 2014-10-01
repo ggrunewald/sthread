@@ -113,14 +113,22 @@ int swait(int tid)
 		if(executingThread->tid == waitedThread->tid)
 		{
 			ret = 1;
-
+printf("swait a exec = %d | ", executingThread->tid);
 			callerThread->status = APT;				//make the waiter APT again
 
 			removeThread(blockedList, callerThread->tid);		//remove it from the blocked list
 
 			insertThread(aptList[callerThread->priority], callerThread);
+
+printf("swait b exec = %d | ", executingThread->tid);
+printf("swait b [0] = %d | ", aptList[0]->count);
+printf("swait b [1] = %d | ", aptList[1]->count);
+printf("swait b [2] = %d | ", aptList[2]->count);
+
 		}
+		printf("TIIIIIIIIIID %d", executingThread->tid);
 		executingThread->status = ENDED;			//set its status to ended (will not run again)
+		printf("STAAAAAAAAAAATUS %d", executingThread->status);
 
 		dispatcher(FALSE);
 	}
@@ -273,23 +281,28 @@ int dispatcherInit()
 void dispatcher(int isMutex)
 {
 	tcb * auxThread = executingThread;
-printf("TESTE 3 %d oi\n", executingThread->tid);sleep(1);
+sleep(1);
 	int i;
-printf("contador da lista de aptos: %d\n", aptList[1]->count);//sleep(1);
-printf("thread sendo executada: %d\n", executingThread->tid);
+
 	for(i = 0; i < 3; i++)	
 	{
 		if(aptList[i]->count > 0)
 		{
 			executingThread = aptList[i]->first;				//gets next executed thread
 
+				printf("exec tid = %d ", executingThread->tid);
+				printf("exec status = %d ", executingThread->status);
+				printf("aux tid = %d ", auxThread->tid);
+				printf("aux status = %d ", auxThread->status);
+				printf("disp 2 [0] = %d | ", aptList[0]->count);
+				printf("disp 2 [1] = %d | ", aptList[1]->count);
+				printf("disp 2 [2] = %d\n", aptList[2]->count);
+
 			executingThread->status = EXECUTING;
 
 			removeThread(aptList[i], executingThread->tid);
 
-printf("TESTE 2 %d\n", aptList[i]->count);
 
-printf("TESTE 4\n");
 			if(auxThread->status == BLOCKED && !isMutex)
 			{
 				insertThread(blockedList, auxThread);			//insert in blocked list
@@ -302,17 +315,21 @@ printf("TESTE 4\n");
 			}
 			else if(auxThread->status == APT)
 			{
-				printf("TESTE APT\n");
+				printf("TESTE APT i = %d e thread = %d\n", i, auxThread->tid);
 				insertThread(aptList[auxThread->priority], auxThread);	//insert in apt list
 
 				swapcontext(&auxThread->context, &executingThread->context);
 			}
 			else if(auxThread->status == ENDED)
 			{
-				printf("TESTE ENDED\n");
+				printf("TESTE ENDED i = %d e thread = %d\n", i, auxThread->tid);
 				auxThread = NULL;
-
+printf("\n\n %d \n\n", executingThread->tid);
 				setcontext(&executingThread->context);
+			}
+			else if(auxThread->status == EXECUTING)
+			{
+
 			}
 		}
 	}
