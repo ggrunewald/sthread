@@ -1,4 +1,4 @@
-all: 1 2 3 4 5
+all: clean 1 2 3 4 5
 
 1:
 	gcc -o 1.ex teste1.c -L../lib/ -lsthread -Wall
@@ -16,4 +16,4 @@ all: 1 2 3 4 5
 	gcc -o 5.ex teste5.c -L../lib/ -lsthread -Wall
 
 clean:
-	rm *.ex
+	rm -rf *.ex

@@ -9,13 +9,13 @@
 #include        <stdlib.h>
 
 #define		MAX_SIZE	250
-#define		MAX_THR		10
+#define		MAX_THR		2
 
 int vetor[MAX_SIZE];
 int  inc = 0;
 
 void *func(void *arg){
-
+printf("INICIO %d\n\n\n\n\n\n\n", (inc % 20));
    while ( inc < MAX_SIZE ) {
        vetor[inc] = (int)arg;
        inc++;

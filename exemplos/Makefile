@@ -6,9 +6,9 @@ CC=gcc
 LIB_DIR=../lib
 INC_DIR=../include
 
-all: exemplo mandel teste_vetor teste_prio
+all: clean exemplo 1 2 mandel
 
-exemplo: clean exemplo.c $(LIB_DIR)/libsthread.a
+exemplo: exemplo.c $(LIB_DIR)/libsthread.a
 	$(CC) -o exemplo exemplo.c -L$(LIB_DIR) -lsthread -Wall
 
 1: teste_vetor.c $(LIB_DIR)/libsthread.a

@@ -61,9 +61,11 @@ void function1()
 
 int main ()
 {
-	int mainThread;
+	int mainThread = 0;
+	printf("sdfopfoapsdk %d", mainThread);
 	smutex_init(&mutex1);
 	smutex_init(&mutex2);
+	printf("sdfopfoapsdk %d", mainThread);
 
 	mainThread = screate(2, &function1, NULL);
 
