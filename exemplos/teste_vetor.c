@@ -24,8 +24,7 @@ void *func(void *arg){
        else
            continue;
    }
-
-   return (NULL);
+printf("returning %d \n!", executingThread->tid);
 }
 
 

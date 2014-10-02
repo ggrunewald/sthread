@@ -13,7 +13,7 @@
 #include	<stdio.h>
 #include        <stdlib.h>
 
-#define		MAX_SIZE	250
+#define		MAX_SIZE	25002
 #define		MAX_THR		10
 
 int vetor[MAX_SIZE];

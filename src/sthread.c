@@ -281,7 +281,7 @@ int dispatcherInit()
 void dispatcher(int isMutex)
 {
 	tcb * auxThread = executingThread;
-sleep(1);
+
 	int i;
 
 	for(i = 0; i < 3; i++)	
@@ -307,18 +307,18 @@ sleep(1);
 			{
 				insertThread(blockedList, auxThread);			//insert in blocked list
 
-				swapcontext(&auxThread->context, &executingThread->context);
+				setcontext(&executingThread->context);//swapcontext(&auxThread->context, &executingThread->context);
 			}
 			else if(auxThread->status == BLOCKED && isMutex)
 			{
-				swapcontext(&auxThread->context, &executingThread->context);
+				setcontext(&executingThread->context);//swapcontext(&auxThread->context, &executingThread->context);
 			}
 			else if(auxThread->status == APT)
 			{
 				printf("TESTE APT i = %d e thread = %d\n", i, auxThread->tid);
 				insertThread(aptList[auxThread->priority], auxThread);	//insert in apt list
 
-				swapcontext(&auxThread->context, &executingThread->context);
+				setcontext(&executingThread->context);//swapcontext(&auxThread->context, &executingThread->context);
 			}
 			else if(auxThread->status == ENDED)
 			{
